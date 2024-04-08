@@ -1,4 +1,3 @@
-import pygame
 import pyrr
 from constants import *
 from cube import Cube
@@ -37,7 +36,8 @@ class VirtualCameraEngine:
 
     def __update_screen(self) -> None:
         self.view = Translations.get_view_matrix(self.camera)
-        self.projection = Translations.get_projection_matrix(self.__fov, ScreenConstants.AR, ScreenConstants.DEFAULT_NEAR, ScreenConstants.DEFAULT_FAR)
+        self.projection = Translations.get_projection_matrix(self.__fov, ScreenConstants.AR,
+                                                             ScreenConstants.DEFAULT_NEAR, ScreenConstants.DEFAULT_FAR)
         self.__draw_cubes_on_screen()
 
         pygame.display.flip()
@@ -46,6 +46,7 @@ class VirtualCameraEngine:
         self.__handle_backward_forward_left_right(event_key)
         self.__handle_zooming(event_key)
         self.__handle_looking(event_key)
+        self.__handle_reset(event_key)
 
     def __handle_backward_forward_left_right(self, event_key: int) -> None:
         if event_key == pygame.K_w:
@@ -83,12 +84,17 @@ class VirtualCameraEngine:
         elif event_key == pygame.K_o:
             self.camera.tilt_right(5)
 
+    def __handle_reset(self, event_key: int) -> None:
+        if event_key == pygame.K_SPACE:
+            self.camera = Camera()
+
     def __draw_cubes_on_screen(self) -> None:
         for cube in self.__scene_cubes:
             projected_points = cube.get_projected_cube_points(self.view, self.projection)
 
             for edge in CubeConstants.EDGES:
-                pygame.draw.line(self.__screen, (255, 255, 255), projected_points[edge[0]], projected_points[edge[1]])
+                pygame.draw.line(self.__screen, ScreenConstants.COLORS['WHITE'], projected_points[edge[0]],
+                                 projected_points[edge[1]])
 
     def __initialize_initial_cubes(self) -> list[Cube]:
         cubes = []
