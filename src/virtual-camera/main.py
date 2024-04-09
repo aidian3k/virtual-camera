@@ -1,8 +1,5 @@
-import math
-
-import pyrr
 from camera import Camera
-from constants import ScreenConstants, ScreenInitializer
+from constants import ScreenInitializer
 from cameraEngine import VirtualCameraEngine
 
 if __name__ == "__main__":

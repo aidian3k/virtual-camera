@@ -1,3 +1,4 @@
+import pygame.event
 import pyrr
 from constants import *
 from cube import Cube
@@ -18,17 +19,15 @@ class VirtualCameraEngine:
     def run(self) -> None:
         running = True
         self.__scene_cubes: list[Cube] = self.__initialize_initial_cubes()
-
         self.__initialize_initial_cubes()
 
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                if event.type == pygame.KEYDOWN:
-                    self.__screen.fill(ScreenConstants.COLORS['BLACK'])
-                    currently_pressed_key = event.key
-                    self.__handle_key_pressing(currently_pressed_key)
+
+                self.__screen.fill(ScreenConstants.COLORS['BLACK'])
+                self.__handle_key_pressing(pygame.key.get_pressed())
 
                 self.__update_screen()
 
@@ -42,50 +41,50 @@ class VirtualCameraEngine:
 
         pygame.display.flip()
 
-    def __handle_key_pressing(self, event_key: int) -> None:
-        self.__handle_backward_forward_left_right(event_key)
-        self.__handle_zooming(event_key)
-        self.__handle_looking(event_key)
-        self.__handle_reset(event_key)
+    def __handle_key_pressing(self, pressed_keys) -> None:
+        self.__handle_backward_forward_left_right(pressed_keys)
+        self.__handle_zooming(pressed_keys)
+        self.__handle_looking(pressed_keys)
+        self.__handle_reset(pressed_keys)
 
-    def __handle_backward_forward_left_right(self, event_key: int) -> None:
-        if event_key == pygame.K_w:
-            self.camera.position += pyrr.vector3.normalize(self.camera.forward) * 10
-        elif event_key == pygame.K_s:
-            self.camera.position -= pyrr.vector3.normalize(self.camera.forward) * 10
-        elif event_key == pygame.K_a:
-            self.camera.position -= pyrr.vector3.normalize(self.camera.forward.cross(self.camera.up)) * 10
-        elif event_key == pygame.K_d:
-            self.camera.position += pyrr.vector3.normalize(self.camera.forward.cross(self.camera.up)) * 10
-        elif event_key == pygame.K_UP:
-            self.camera.position += pyrr.vector3.normalize(self.camera.up) * 10
-        elif event_key == pygame.K_DOWN:
-            self.camera.position -= pyrr.vector3.normalize(self.camera.up) * 10
+    def __handle_backward_forward_left_right(self, pressed_keys: list[bool]) -> None:
+        if pressed_keys[pygame.K_w]:
+            self.camera.position += pyrr.vector3.normalize(self.camera.forward) * ScreenConstants.MOVE_STEP
+        elif pressed_keys[pygame.K_s]:
+            self.camera.position -= pyrr.vector3.normalize(self.camera.forward) * ScreenConstants.MOVE_STEP
+        elif pressed_keys[pygame.K_a]:
+            self.camera.position -= pyrr.vector3.normalize(self.camera.forward.cross(self.camera.up)) * ScreenConstants.MOVE_STEP
+        elif pressed_keys[pygame.K_d]:
+            self.camera.position += pyrr.vector3.normalize(self.camera.forward.cross(self.camera.up)) * ScreenConstants.MOVE_STEP
+        elif pressed_keys[pygame.K_UP]:
+            self.camera.position += pyrr.vector3.normalize(self.camera.up) * ScreenConstants.MOVE_STEP
+        elif pressed_keys[pygame.K_DOWN]:
+            self.camera.position -= pyrr.vector3.normalize(self.camera.up) * ScreenConstants.MOVE_STEP
 
-    def __handle_zooming(self, event_key: int) -> None:
-        if event_key == pygame.K_EQUALS:
+    def __handle_zooming(self, pressed_keys: list[bool]) -> None:
+        if pressed_keys[pygame.K_EQUALS]:
             if self.__fov > ScreenConstants.MINIMUM_FOV:
-                self.__fov -= 5
-        elif event_key == pygame.K_MINUS:
+                self.__fov -= ScreenConstants.ZOOM_STEP
+        elif pressed_keys[pygame.K_MINUS]:
             if self.__fov < ScreenConstants.MAXIMUM_FOV:
-                self.__fov += 5
+                self.__fov += ScreenConstants.ZOOM_STEP
 
-    def __handle_looking(self, event_key: int) -> None:
-        if event_key == pygame.K_i:
-            self.camera.look_up(5)
-        elif event_key == pygame.K_j:
-            self.camera.look_right(5)
-        elif event_key == pygame.K_k:
-            self.camera.look_down(5)
-        elif event_key == pygame.K_l:
-            self.camera.look_left(5)
-        elif event_key == pygame.K_u:
-            self.camera.tilt_left(5)
-        elif event_key == pygame.K_o:
-            self.camera.tilt_right(5)
+    def __handle_looking(self, pressed_keys: list[bool]) -> None:
+        if pressed_keys[pygame.K_i]:
+            self.camera.look_up(ScreenConstants.LOOK_STEP)
+        elif pressed_keys[pygame.K_j]:
+            self.camera.look_right(ScreenConstants.LOOK_STEP)
+        elif pressed_keys[pygame.K_k]:
+            self.camera.look_down(ScreenConstants.LOOK_STEP)
+        elif pressed_keys[pygame.K_l]:
+            self.camera.look_left(ScreenConstants.LOOK_STEP)
+        elif pressed_keys[pygame.K_u]:
+            self.camera.tilt_left(ScreenConstants.LOOK_STEP)
+        elif pressed_keys[pygame.K_o]:
+            self.camera.tilt_right(ScreenConstants.LOOK_STEP)
 
-    def __handle_reset(self, event_key: int) -> None:
-        if event_key == pygame.K_SPACE:
+    def __handle_reset(self, pressed_keys: list[bool]) -> None:
+        if pressed_keys[pygame.K_SPACE]:
             self.camera = Camera()
 
     def __draw_cubes_on_screen(self) -> None:

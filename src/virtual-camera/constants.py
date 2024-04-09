@@ -6,7 +6,8 @@ class ScreenConstants:
     SCREEN_HEIGHT: int = 600
     SCREEN_TITLE: str = "Virtual Camera"
     SCREEN_COLOR: tuple = (0, 0, 0)
-    MOVE_STEP: int = 20
+    MOVE_STEP: int = 5
+    LOOK_STEP: int = 5
     ZOOM_STEP: int = 5
     DEFAULT_FOV: float = 60.0
     DEFAULT_NEAR: float = 5.0
