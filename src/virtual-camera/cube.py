@@ -20,11 +20,14 @@ class Cube:
         for vertex in self.__vertices:
             transformed_point = np.dot(view_matrix, np.append(vertex, 1))
             transformed_point = np.dot(projection_matrix, transformed_point)
-            transformed_point /= transformed_point[3]
+            if transformed_point[3] > 0:
+                transformed_point /= transformed_point[3]
 
-            projected_x = int((transformed_point[0] + 1) * 0.5 * ScreenConstants.SCREEN_WIDTH)
-            projected_y = int((1 - transformed_point[1]) * 0.5 * ScreenConstants.SCREEN_HEIGHT)
-            projected_vertices.append((projected_x, projected_y))
+                projected_x = int((transformed_point[0] + 1) * 0.5 * ScreenConstants.SCREEN_WIDTH)
+                projected_y = int((1 - transformed_point[1]) * 0.5 * ScreenConstants.SCREEN_HEIGHT)
+                projected_vertices.append((projected_x, projected_y))
+            else:
+                projected_vertices.append(None)
 
         return projected_vertices
 

@@ -93,7 +93,8 @@ class VirtualCameraEngine:
             projected_points = cube.get_projected_cube_points(self.view, self.projection)
 
             for edge in CubeConstants.EDGES:
-                pygame.draw.line(self.__screen, ScreenConstants.COLORS['WHITE'], projected_points[edge[0]],
+                if projected_points[edge[0]] is not None and projected_points[edge[1]] is not None:
+                    pygame.draw.line(self.__screen, ScreenConstants.COLORS['WHITE'], projected_points[edge[0]],
                                  projected_points[edge[1]])
 
     def __initialize_initial_cubes(self) -> list[Cube]:
