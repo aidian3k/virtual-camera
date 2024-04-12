@@ -14,9 +14,10 @@ class ScreenConstants:
     DEFAULT_FAR: float = 300.0
     AR: float = SCREEN_WIDTH / SCREEN_HEIGHT
     COLORS = {'WHITE': (255, 255, 255), 'BLACK': (0, 0, 0)}
-    POLYGON_COLORS = {'BLUE' : (65, 105, 225), 'YELLOW': (255, 255, 102), 'GREEN': (46, 139, 87), 'PURPLE': (153, 102, 204)}
+    POLYGON_COLORS = {'BLUE' : (0, 0, 255), 'YELLOW': (255, 255, 0), 'GREEN': (0, 255, 0), 'PURPLE': (128, 0, 128)}
     MINIMUM_FOV = 30
     MAXIMUM_FOV = 90
+    CIRCLE_SIZE = 5
 
 
 class ScreenInitializer:

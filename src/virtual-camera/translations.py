@@ -1,5 +1,5 @@
 import numpy as np
-from camera import Camera
+
 
 class Translations:
     @staticmethod
@@ -10,28 +10,35 @@ class Translations:
         projection_matrix = np.array([
             [cot_half_fov, 0, 0, 0],
             [0, cot_half_fov * (1 / aspect_ratio), 0, 0],
-            [0, 0, (-far - near) / (far - near), (-2 * far * near) / (far - near)],
+            [0, 0, (far + near) / (near - far), (2 * far * near) / (near - far)],
             [0, 0, -1, 0]
         ])
 
         return projection_matrix
 
     @staticmethod
-    def get_view_matrix(camera):
-        forward = camera.forward / np.linalg.norm(camera.forward)
-        up = camera.up / np.linalg.norm(camera.up)
+    def get_x_camera_rotation(angle: float) -> np.array:
+        cos_rotation = np.cos(angle)
+        sin_rotation = np.sin(angle)
 
-        right = np.cross(forward, up) / np.linalg.norm(np.cross(forward, up))
-        up = np.cross(right, forward)
+        return np.array([[1, 0, 0],
+                         [0, cos_rotation, -sin_rotation],
+                         [0, sin_rotation, cos_rotation]])
 
-        translation_matrix = np.eye(4)
-        translation_matrix[0:3, 3] = -1 * camera.position
+    @staticmethod
+    def get_y_camera_rotation(angle: float) -> np.array:
+        cos_rotation = np.cos(angle)
+        sin_rotation = np.sin(angle)
 
-        rotation_matrix = np.eye(4)
-        rotation_matrix[0:3, 0] = right
-        rotation_matrix[0:3, 1] = up
-        rotation_matrix[0:3, 2] = -forward
+        return np.array([[cos_rotation, 0, sin_rotation],
+                         [0, 1, 0],
+                         [-sin_rotation, 0, cos_rotation]])
 
-        view_matrix = np.dot(rotation_matrix, translation_matrix)
+    @staticmethod
+    def get_z_camera_rotation(angle: float) -> np.array:
+        cos_rotation = np.cos(angle)
+        sin_rotation = np.sin(angle)
 
-        return view_matrix
+        return np.array([[cos_rotation, -sin_rotation, 0],
+                         [sin_rotation, cos_rotation, 0],
+                         [0, 0, 1]])

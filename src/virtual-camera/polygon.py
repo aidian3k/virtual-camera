@@ -1,11 +1,13 @@
 import numpy as np
 from pyrr import Vector3
 from constants import ScreenConstants
+from translations import Translations
 
 
 class Polygon:
-    def __init__(self, vertices: list[Vector3]):
+    def __init__(self, vertices: list[Vector3], color: tuple):
         self.__vertices = vertices
+        self.color = color
 
     def __get_center_of_gravity(self) -> np.array:
         num_vertices = len(self.__vertices)
@@ -31,12 +33,18 @@ class Polygon:
         return (position[0] - center_of_gravity[0]) ** 2 + (position[1] - center_of_gravity[1]) ** 2 + (
                     position[2] - center_of_gravity[2]) ** 2
 
-    def get_projected_polygon_points(self, view_matrix, projection_matrix) -> list[tuple]:
+    def get_projected_polygon_points(self, camera, projection_matrix) -> list[tuple]:
         projected_vertices = []
 
         for vertex in self.__vertices:
-            transformed_point = np.dot(view_matrix, np.append(vertex, 1))
-            transformed_point = np.dot(projection_matrix, transformed_point)
+            normalized_vertex_to_camera = vertex - camera.position
+
+            rotated_point = np.dot(Translations.get_y_camera_rotation(camera.yaw), normalized_vertex_to_camera)
+            rotated_point = np.dot(Translations.get_x_camera_rotation(camera.pitch), rotated_point)
+            rotated_point = np.dot(Translations.get_z_camera_rotation(camera.roll), rotated_point)
+
+            transformed_point = np.dot(projection_matrix, np.append(rotated_point, 1))
+
             if transformed_point[3] > 0:
                 transformed_point /= transformed_point[3]
 

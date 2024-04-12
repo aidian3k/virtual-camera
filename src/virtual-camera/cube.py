@@ -2,7 +2,8 @@ import numpy as np
 from pyrr import Vector3
 from constants import *
 from polygon import Polygon
-
+from translations import Translations
+import random
 
 class Cube:
     def __init__(self, starting_position: Vector3) -> None:
@@ -27,16 +28,22 @@ class Cube:
                 current_vertex = CubeConstants.VERTICES[single_polygon_vertex]
                 calculated_polygon_vertices.append(self.__starting_position + np.array(current_vertex) * CubeConstants.CUBE_SIZE)
 
-            polygons.append(Polygon(calculated_polygon_vertices))
+            polygons.append(Polygon(calculated_polygon_vertices, random.choice(list(ScreenConstants.POLYGON_COLORS.values()))))
 
         return polygons
 
-    def get_projected_cube_points(self, view_matrix, projection_matrix) -> list[tuple]:
+    def get_projected_cube_points(self, camera, projection_matrix) -> list[tuple]:
         projected_vertices = []
 
         for vertex in self.__vertices:
-            transformed_point = np.dot(view_matrix, np.append(vertex, 1))
-            transformed_point = np.dot(projection_matrix, transformed_point)
+            normalized_vertex_to_camera = vertex - camera.position
+
+            rotated_point = np.dot(Translations.get_y_camera_rotation(camera.yaw), normalized_vertex_to_camera)
+            rotated_point = np.dot(Translations.get_x_camera_rotation(camera.pitch), rotated_point)
+            rotated_point = np.dot(Translations.get_z_camera_rotation(camera.roll), rotated_point)
+
+            transformed_point = np.dot(projection_matrix, np.append(rotated_point, 1))
+
             if transformed_point[3] > 0:
                 transformed_point /= transformed_point[3]
 
