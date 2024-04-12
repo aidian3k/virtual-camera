@@ -126,7 +126,7 @@ class VirtualCameraEngine:
 
         sorted_polygons = [polygon for polygon, _ in sorted(distances, key=lambda x: x[1])]
 
-        return sorted_polygons
+        return sorted_polygons[::-1]
 
     def __initialize_initial_cubes(self) -> list[Cube]:
         cubes = []
