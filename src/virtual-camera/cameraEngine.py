@@ -1,8 +1,11 @@
 import pygame.event
 import pyrr
+from pyrr import Vector3
+
 from constants import *
 from cube import Cube
 from camera import Camera
+from polygon import Polygon
 from translations import Translations
 
 
@@ -15,6 +18,7 @@ class VirtualCameraEngine:
         self.projection = Translations.get_projection_matrix(ScreenConstants.DEFAULT_FOV, ScreenConstants.AR,
                                                              ScreenConstants.DEFAULT_NEAR, ScreenConstants.DEFAULT_FAR)
         self.__scene_cubes = []
+        self.__is_drawing_polygons = False
 
     def run(self) -> None:
         running = True
@@ -25,6 +29,10 @@ class VirtualCameraEngine:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LSHIFT:
+                        self.__is_drawing_polygons = not self.__is_drawing_polygons
 
                 self.__screen.fill(ScreenConstants.COLORS['BLACK'])
                 self.__handle_key_pressing(pygame.key.get_pressed())
@@ -53,9 +61,11 @@ class VirtualCameraEngine:
         elif pressed_keys[pygame.K_s]:
             self.camera.position -= pyrr.vector3.normalize(self.camera.forward) * ScreenConstants.MOVE_STEP
         elif pressed_keys[pygame.K_a]:
-            self.camera.position -= pyrr.vector3.normalize(self.camera.forward.cross(self.camera.up)) * ScreenConstants.MOVE_STEP
+            self.camera.position -= pyrr.vector3.normalize(
+                self.camera.forward.cross(self.camera.up)) * ScreenConstants.MOVE_STEP
         elif pressed_keys[pygame.K_d]:
-            self.camera.position += pyrr.vector3.normalize(self.camera.forward.cross(self.camera.up)) * ScreenConstants.MOVE_STEP
+            self.camera.position += pyrr.vector3.normalize(
+                self.camera.forward.cross(self.camera.up)) * ScreenConstants.MOVE_STEP
         elif pressed_keys[pygame.K_UP]:
             self.camera.position += pyrr.vector3.normalize(self.camera.up) * ScreenConstants.MOVE_STEP
         elif pressed_keys[pygame.K_DOWN]:
@@ -89,12 +99,32 @@ class VirtualCameraEngine:
 
     def __draw_cubes_on_screen(self) -> None:
         for cube in self.__scene_cubes:
-            projected_points = cube.get_projected_cube_points(self.view, self.projection)
+            if not self.__is_drawing_polygons:
+                projected_points = cube.get_projected_cube_points(self.view, self.projection)
 
-            for edge in CubeConstants.EDGES:
-                if projected_points[edge[0]] is not None and projected_points[edge[1]] is not None:
-                    pygame.draw.line(self.__screen, ScreenConstants.COLORS['WHITE'], projected_points[edge[0]],
-                                 projected_points[edge[1]])
+                for edge in CubeConstants.EDGES:
+                    if projected_points[edge[0]] is not None and projected_points[edge[1]] is not None:
+                        pygame.draw.line(self.__screen, ScreenConstants.COLORS['WHITE'], projected_points[edge[0]],
+                                         projected_points[edge[1]])
+            else:
+                all_cubes_polygons: list[Polygon] = [polygon for cube in self.__scene_cubes for polygon in cube.polygons]
+                sorted_polygons_by_distance_of_observer = self.sort_polygons_by_distance_of_observer(all_cubes_polygons, self.camera.position)
+
+                for polygon in sorted_polygons_by_distance_of_observer:
+                    projected_polygon_points = polygon.get_projected_polygon_points(self.view, self.projection)
+
+                    if all(projected_polygon_points):
+                        pygame.draw.polygon(self.__screen, ScreenConstants.COLORS['WHITE'], projected_polygon_points)
+
+    def sort_polygons_by_distance_of_observer(self, polygons: list[Polygon], observer: Vector3) -> list[Polygon]:
+        distances = []
+
+        for polygon in polygons:
+            distances.append((polygon, polygon.get_distance_from_observer(observer)))
+
+        sorted_polygons = [polygon for polygon, _ in sorted(distances, key=lambda x: x[1])]
+
+        return sorted_polygons
 
     def __initialize_initial_cubes(self) -> list[Cube]:
         cubes = []

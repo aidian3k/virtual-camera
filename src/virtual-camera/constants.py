@@ -14,6 +14,7 @@ class ScreenConstants:
     DEFAULT_FAR: float = 300.0
     AR: float = SCREEN_WIDTH / SCREEN_HEIGHT
     COLORS = {'WHITE': (255, 255, 255), 'BLACK': (0, 0, 0)}
+    POLYGON_COLORS = {'BLUE' : (65, 105, 225), 'YELLOW': (255, 255, 102), 'GREEN': (46, 139, 87), 'PURPLE': (153, 102, 204)}
     MINIMUM_FOV = 30
     MAXIMUM_FOV = 90
 
@@ -35,6 +36,13 @@ class CubeConstants:
                 [1, -1, 1],
                 [1, 1, 1],
                 [-1, 1, 1]]
+
+    FACES = [[0, 1, 5, 4],
+             [2, 3, 7, 6],
+             [0, 3, 7, 4],
+             [1, 2, 6, 5],
+             [0, 1, 2, 3],
+             [4, 5, 6, 7]]
 
     CUBE_SIZE = 20
 
