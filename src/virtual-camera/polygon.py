@@ -6,17 +6,17 @@ from translations import Translations
 
 class Polygon:
     def __init__(self, vertices: list[Vector3], color: tuple):
-        self.__vertices = vertices
+        self.vertices = vertices
         self.color = color
 
     def __get_center_of_gravity(self) -> np.array:
-        num_vertices = len(self.__vertices)
+        num_vertices = len(self.vertices)
         if num_vertices == 0:
             return None
 
         sum_x = sum_y = sum_z = 0
 
-        for vertex in self.__vertices:
+        for vertex in self.vertices:
             sum_x += vertex[0]
             sum_y += vertex[1]
             sum_z += vertex[2]
@@ -36,7 +36,7 @@ class Polygon:
     def get_projected_polygon_points(self, camera, projection_matrix) -> list[tuple]:
         projected_vertices = []
 
-        for vertex in self.__vertices:
+        for vertex in self.vertices:
             normalized_vertex_to_camera = vertex - camera.position
 
             rotated_point = np.dot(Translations.get_y_camera_rotation(camera.yaw), normalized_vertex_to_camera)

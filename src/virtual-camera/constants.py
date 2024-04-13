@@ -14,7 +14,33 @@ class ScreenConstants:
     DEFAULT_FAR: float = 300.0
     AR: float = SCREEN_WIDTH / SCREEN_HEIGHT
     COLORS = {'WHITE': (255, 255, 255), 'BLACK': (0, 0, 0)}
-    POLYGON_COLORS = {'BLUE' : (0, 0, 255), 'YELLOW': (255, 255, 0), 'GREEN': (0, 255, 0), 'PURPLE': (128, 0, 128)}
+    POLYGON_COLORS = colors = {
+        'BLUE': (0, 0, 255),
+        'YELLOW': (255, 255, 0),
+        'GREEN': (0, 255, 0),
+        'PURPLE': (128, 0, 128),
+        'ORANGE': (255, 165, 0),
+        'RED': (255, 0, 0),
+        'PINK': (255, 192, 203),
+        'BROWN': (165, 42, 42),
+        'CYAN': (0, 255, 255),
+        'MAGENTA': (255, 0, 255),
+        'GOLD': (255, 215, 0),
+        'SILVER': (192, 192, 192),
+        'MAROON': (128, 0, 0),
+        'NAVY': (0, 0, 128),
+        'TEAL': (0, 128, 128),
+        'OLIVE': (128, 128, 0),
+        'LIME': (0, 255, 0),
+        'AQUA': (0, 255, 255),
+        'FUCHSIA': (255, 0, 255),
+        'KHAKI': (240, 230, 140),
+        'TURQUOISE': (64, 224, 208),
+        'INDIGO': (75, 0, 130),
+        'VIOLET': (238, 130, 238),
+        'CRIMSON': (220, 20, 60),
+        'BEIGE': (245, 245, 220)
+    }
     MINIMUM_FOV = 30
     MAXIMUM_FOV = 90
     CIRCLE_SIZE = 5
@@ -38,12 +64,12 @@ class CubeConstants:
                 [1, 1, 1],
                 [-1, 1, 1]]
 
-    FACES = [[0, 1, 5, 4],
-             [2, 3, 7, 6],
-             [0, 3, 7, 4],
-             [1, 2, 6, 5],
-             [0, 1, 2, 3],
-             [4, 5, 6, 7]]
+    FACES = [[0, 1, 2], [0, 2, 3],  # Front face
+             [4, 5, 6], [4, 6, 7],  # Back face
+             [1, 5, 6], [1, 6, 2],  # Right face
+             [0, 4, 7], [0, 7, 3],  # Left face
+             [3, 2, 6], [3, 6, 7],  # Top face
+             [0, 1, 5], [0, 5, 4]]  # Bottom face
 
     CUBE_SIZE = 20
 

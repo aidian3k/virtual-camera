@@ -7,6 +7,7 @@ from cube import Cube
 from camera import Camera
 from polygon import Polygon
 from translations import Translations
+from bsp import BspTree
 
 
 class VirtualCameraEngine:
@@ -18,11 +19,17 @@ class VirtualCameraEngine:
                                                              ScreenConstants.DEFAULT_NEAR, ScreenConstants.DEFAULT_FAR)
         self.__scene_cubes = []
         self.__is_drawing_polygons = False
+        self.__bsp_tree = None
 
     def run(self) -> None:
         running = True
         self.__scene_cubes: list[Cube] = self.__initialize_initial_cubes()
         self.__initialize_initial_cubes()
+        all_cubes_polygons: list[Polygon] = [polygon for cube in self.__scene_cubes for polygon in cube.polygons]
+        self.__bsp_tree = BspTree(all_cubes_polygons[0])
+
+        for polygon in all_cubes_polygons[1:]:
+            self.__bsp_tree.add(polygon)
 
         while running:
             for event in pygame.event.get():
@@ -55,13 +62,13 @@ class VirtualCameraEngine:
 
     def __handle_backward_forward_left_right(self, pressed_keys: list[bool]) -> None:
         if pressed_keys[pygame.K_w]:
-            self.camera.position -= self.camera.get_direction_vector() * ScreenConstants.MOVE_STEP
+            self.camera.position -= self.camera.get_forward_direction_vector() * ScreenConstants.MOVE_STEP
         elif pressed_keys[pygame.K_s]:
-            self.camera.position += self.camera.get_direction_vector() * ScreenConstants.MOVE_STEP
+            self.camera.position += self.camera.get_forward_direction_vector() * ScreenConstants.MOVE_STEP
         elif pressed_keys[pygame.K_a]:
-            self.camera.position[0] -= ScreenConstants.MOVE_STEP
+            self.camera.position -= self.camera.get_left_direction_matrix() * ScreenConstants.MOVE_STEP
         elif pressed_keys[pygame.K_d]:
-            self.camera.position[0] += ScreenConstants.MOVE_STEP
+            self.camera.position -= self.camera.get_right_direction_matrix() * ScreenConstants.MOVE_STEP
         elif pressed_keys[pygame.K_UP]:
             self.camera.position[1] += ScreenConstants.MOVE_STEP
         elif pressed_keys[pygame.K_DOWN]:
@@ -109,14 +116,7 @@ class VirtualCameraEngine:
                         pygame.draw.line(self.__screen, ScreenConstants.COLORS['WHITE'], projected_points[edge[0]],
                                          projected_points[edge[1]])
             else:
-                all_cubes_polygons: list[Polygon] = [polygon for cube in self.__scene_cubes for polygon in cube.polygons]
-                sorted_polygons_by_distance_of_observer = self.sort_polygons_by_distance_of_observer(all_cubes_polygons, self.camera.position)
-
-                for polygon in sorted_polygons_by_distance_of_observer:
-                    projected_polygon_points = polygon.get_projected_polygon_points(self.camera, self.projection)
-
-                    if all(projected_polygon_points):
-                        pygame.draw.polygon(self.__screen, polygon.color, projected_polygon_points)
+                self.__bsp_tree.draw_polygons_recursively(self.camera, self.projection, self.__screen)
 
     def sort_polygons_by_distance_of_observer(self, polygons: list[Polygon], observer: Vector3) -> list[Polygon]:
         distances = []
