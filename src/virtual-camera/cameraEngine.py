@@ -66,9 +66,13 @@ class VirtualCameraEngine:
         elif pressed_keys[pygame.K_s]:
             self.camera.position += self.camera.get_forward_direction_vector() * ScreenConstants.MOVE_STEP
         elif pressed_keys[pygame.K_a]:
-            self.camera.position -= self.camera.get_left_direction_matrix() * ScreenConstants.MOVE_STEP
+            left_direction = self.camera.get_left_direction_matrix()
+            left_direction[1] = 0
+            self.camera.position -= left_direction * ScreenConstants.MOVE_STEP
         elif pressed_keys[pygame.K_d]:
-            self.camera.position -= self.camera.get_right_direction_matrix() * ScreenConstants.MOVE_STEP
+            right_direction = self.camera.get_right_direction_matrix()
+            right_direction[1] = 0
+            self.camera.position -= right_direction * ScreenConstants.MOVE_STEP
         elif pressed_keys[pygame.K_UP]:
             self.camera.position[1] += ScreenConstants.MOVE_STEP
         elif pressed_keys[pygame.K_DOWN]:

@@ -22,6 +22,7 @@ def normalize_polygon(polygon: Polygon):
 
 def implicit_plane_function(point, polygon):
     n = normalize_polygon(polygon)
+
     return n @ (point - polygon.vertices[0][:3])
 
 
@@ -60,6 +61,7 @@ class BspTree:
 
     def add(self, polygon: Polygon):
         triangle_vertices = polygon.vertices
+
         first_node = triangle_vertices[0]
         second_node = triangle_vertices[1]
         third_node = triangle_vertices[2]
