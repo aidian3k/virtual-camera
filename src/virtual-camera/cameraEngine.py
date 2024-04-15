@@ -103,6 +103,7 @@ class VirtualCameraEngine:
     def __handle_reset(self, pressed_keys: list[bool]) -> None:
         if pressed_keys[pygame.K_SPACE]:
             self.camera = Camera()
+            self.__fov = ScreenConstants.DEFAULT_FOV
 
     def __draw_cubes_on_screen(self) -> None:
         for cube in self.__scene_cubes:

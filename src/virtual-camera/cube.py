@@ -5,6 +5,7 @@ from polygon import Polygon
 from translations import Translations
 import random
 
+
 class Cube:
     def __init__(self, starting_position: Vector3) -> None:
         self.__starting_position = starting_position
@@ -26,9 +27,11 @@ class Cube:
 
             for single_polygon_vertex in polygon_vertices:
                 current_vertex = CubeConstants.VERTICES[single_polygon_vertex]
-                calculated_polygon_vertices.append(self.__starting_position + np.array(current_vertex) * CubeConstants.CUBE_SIZE)
+                calculated_polygon_vertices.append(
+                    self.__starting_position + np.array(current_vertex) * CubeConstants.CUBE_SIZE)
 
-            polygons.append(Polygon(calculated_polygon_vertices, random.choice(list(ScreenConstants.POLYGON_COLORS.values()))))
+            polygons.append(
+                Polygon(calculated_polygon_vertices, random.choice(list(ScreenConstants.POLYGON_COLORS.values()))))
 
         return polygons
 
@@ -54,4 +57,3 @@ class Cube:
                 projected_vertices.append(None)
 
         return projected_vertices
-
