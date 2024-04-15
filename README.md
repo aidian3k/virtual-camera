@@ -67,3 +67,17 @@ src directory and run the application by typing python3 main.py.
     <td>SPACE</td>
   </tr>
 </table>
+
+## Some films of the application
+
+### 1 - Presentation of the functionalities without BSP hidden surface elimination
+https://github.com/aidian3k/virtual-camera/assets/93425971/71bd3176-2141-4d22-a333-567c2e614091
+
+### 2 - Presentation of functionalities with BSP hidden surface elimination
+https://github.com/aidian3k/virtual-camera/assets/93425971/7f69658d-67f3-48fc-b38d-09f823086e8d
+
+
+
+
+
+
