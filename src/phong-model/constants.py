@@ -1,3 +1,4 @@
+import numpy as np
 import pygame
 
 
@@ -8,12 +9,18 @@ class ScreenConstants:
     SCREEN_COLOR: tuple = (0, 0, 0)
     SPHERE_RADIUS = 100
     SPHERE_CENTER: tuple = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH / 2)
-    DEFAULT_MATERIAL: tuple = (0.4, 0.9, 0.9)
+    DEFAULT_MATERIAL: tuple = (0.4, 0.7, 0.7)
     CHALK_MATERIAL: tuple = (0.4, 0.3, 0.01)
     WOOD_MATERIAL: tuple = (0.8, 0.8, 0.3)
+    METAL_MATERIAL: tuple = (0.95, 0.98, 0.99)
+    GLASS_MATERIAL: tuple = (0.7, 0.85, 0.95)
+    PLASTIC_MATERIAL: tuple = (0.6, 0.7, 0.5)
     STEP_SIZE = 50
     COLOR_SATURATION = 0.5
-    MATERIALS = [DEFAULT_MATERIAL, CHALK_MATERIAL, WOOD_MATERIAL]
+    INITIAL_POSITION_OF_LIGHT = np.array([250, 200, 0], dtype=float)
+    INITIAL_POSITION_OF_OBSERVER = np.array([200, 200, 0], dtype=float)
+    MATERIALS = [('DEFAULT', DEFAULT_MATERIAL), ('CHALK', CHALK_MATERIAL), ('WOOD', WOOD_MATERIAL),
+                 ('METAL', METAL_MATERIAL), ('GLASS', GLASS_MATERIAL), ('PLASTIC', PLASTIC_MATERIAL)]
     Ia = 1
     Ip = 0.6
     Ka = 0.4
@@ -22,6 +29,7 @@ class ScreenConstants:
     n = 27
 
     SPHERE_COLORS = {
+        'WHITE': (255, 255, 255),
         'BLACK': (0, 0, 0),
         'BLUE': (0, 0, 255),
         'YELLOW': (255, 255, 0),

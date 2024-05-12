@@ -3,14 +3,15 @@ from colorsys import hls_to_rgb
 
 import numpy as np
 import pygame
+
 from constants import ScreenConstants
 
 
 class PhongModelEngine:
     def __init__(self, screen):
         self.__screen = screen
-        self.__light_position = np.array([250, 200, 0], dtype=float)
-        self.__observer_position = np.array([200, 200, 0], dtype=float)
+        self.__light_position = ScreenConstants.INITIAL_POSITION_OF_LIGHT
+        self.__observer_position = ScreenConstants.INITIAL_POSITION_OF_OBSERVER
         self.__current_material_index = 0
         self.__current_material = ScreenConstants.MATERIALS[self.__current_material_index]
 
@@ -31,7 +32,7 @@ class PhongModelEngine:
 
                         self.__current_material = ScreenConstants.MATERIALS[self.__current_material_index]
                 elif event.type == pygame.K_SPACE:
-                    self.__light_position = np.array([200, 200, 0])
+                    self.__light_position = ScreenConstants.INITIAL_POSITION_OF_LIGHT
 
             self.__handle_key_pressing(pygame.key.get_pressed())
             self.__update_screen()
@@ -41,6 +42,7 @@ class PhongModelEngine:
     def __update_screen(self) -> None:
         self.__screen.fill(ScreenConstants.SPHERE_COLORS['BLACK'])
         self.__draw_illuminated_sphere()
+        self.__display_currently_chosen_material()
 
         pygame.display.flip()
 
@@ -68,10 +70,9 @@ class PhongModelEngine:
 
         f_att = min(1 / (K_c + K_l * r + K_q * r ** 2), 1.0)
 
-        illumination = (ScreenConstants.Ia * self.__current_material[0]
-                        + f_att * ScreenConstants.Ip * self.__current_material[1] * max(np.dot(N, L), 0)
-                        + f_att * ScreenConstants.Ip * self.__current_material[2] * max(np.dot(R, V),
-                                                                                        0) ** ScreenConstants.n)
+        illumination = (ScreenConstants.Ia * self.__current_material[1][0] + f_att * ScreenConstants.Ip *
+                        self.__current_material[1][1] * max(np.dot(N, L), 0) + f_att * ScreenConstants.Ip *
+                        self.__current_material[1][2] * max(np.dot(R, V), 0) ** ScreenConstants.n)
 
         return min(illumination, 1)
 
@@ -91,20 +92,27 @@ class PhongModelEngine:
 
     def __check_if_light_inside_sphere(self, x, y, z) -> bool:
         r = math.sqrt((x - ScreenConstants.SPHERE_CENTER[0]) ** 2 + (y - ScreenConstants.SPHERE_CENTER[1]) ** 2 + (
-                    z - ScreenConstants.SPHERE_CENTER[2]) ** 2)
+                z - ScreenConstants.SPHERE_CENTER[2]) ** 2)
 
         return r > ScreenConstants.SPHERE_RADIUS
 
     def __calculate_z_sphere(self, x: int, y: int) -> float:
         b = -2 * ScreenConstants.SPHERE_CENTER[2]
         c = ScreenConstants.SPHERE_CENTER[2] ** 2 + (x - ScreenConstants.SPHERE_CENTER[0]) ** 2 + (
-                    y - ScreenConstants.SPHERE_CENTER[1]) ** 2 - ScreenConstants.SPHERE_RADIUS ** 2
+                y - ScreenConstants.SPHERE_CENTER[1]) ** 2 - ScreenConstants.SPHERE_RADIUS ** 2
         delta = b ** 2 - 4 * c
 
         if delta == 0:
             return -b / 2
         elif delta > 0:
             return min((math.sqrt(delta) - b) / 2, (-math.sqrt(delta) - b) / 2)
+
+    def __display_currently_chosen_material(self):
+        size_of_font, vertical_position_of_the_text = 36, 40
+        font = pygame.font.SysFont(None, size_of_font)
+        text = font.render(f"Material: {self.__current_material[0]}", True, ScreenConstants.SPHERE_COLORS['WHITE'])
+        text_rect = text.get_rect(center=(ScreenConstants.SCREEN_WIDTH // 2, vertical_position_of_the_text))
+        self.__screen.blit(text, text_rect)
 
     def __handle_key_pressing(self, pressed_keys) -> None:
         if pressed_keys[pygame.K_UP] and self.__check_if_light_inside_sphere(self.__light_position[0],
@@ -118,13 +126,11 @@ class PhongModelEngine:
                                                                                      2] - ScreenConstants.STEP_SIZE):
             self.__light_position[2] -= ScreenConstants.STEP_SIZE
         elif pressed_keys[pygame.K_a] and self.__check_if_light_inside_sphere(
-                self.__light_position[0] - ScreenConstants.STEP_SIZE,
-                self.__light_position[1],
+                self.__light_position[0] - ScreenConstants.STEP_SIZE, self.__light_position[1],
                 self.__light_position[2]):
             self.__light_position[0] -= ScreenConstants.STEP_SIZE
         elif pressed_keys[pygame.K_d] and self.__check_if_light_inside_sphere(
-                self.__light_position[0] + ScreenConstants.STEP_SIZE,
-                self.__light_position[1],
+                self.__light_position[0] + ScreenConstants.STEP_SIZE, self.__light_position[1],
                 self.__light_position[2]):
             self.__light_position[0] += ScreenConstants.STEP_SIZE
         elif pressed_keys[pygame.K_w] and self.__check_if_light_inside_sphere(self.__light_position[0],
