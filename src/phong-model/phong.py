@@ -40,7 +40,7 @@ class PhongModelEngine:
         pygame.quit()
 
     def __update_screen(self) -> None:
-        self.__screen.fill(ScreenConstants.SPHERE_COLORS['BLACK'])
+        self.__screen.fill(ScreenConstants.SPHERE_COLORS['GRAY'])
         self.__draw_illuminated_sphere()
         self.__display_currently_chosen_material()
 
@@ -53,7 +53,7 @@ class PhongModelEngine:
 
                 if z:
                     illumination = self.__calculate_light_illumination(x, y, int(z))
-                    red, green, blue = hls_to_rgb(0.1, illumination, ScreenConstants.COLOR_SATURATION)
+                    red, green, blue = hls_to_rgb(0.5, illumination, ScreenConstants.COLOR_SATURATION)
                     color = (255 * red, 255 * green, 255 * blue)
                     self.__screen.set_at((x, ScreenConstants.SCREEN_HEIGHT - y), color)
 
@@ -70,7 +70,7 @@ class PhongModelEngine:
 
         f_att = min(1 / (K_c + K_l * r + K_q * r ** 2), 1.0)
 
-        illumination = (ScreenConstants.Ia * self.__current_material[1][0] + f_att * ScreenConstants.Ip *
+        illumination = (f_att * ScreenConstants.Ip *
                         self.__current_material[1][1] * max(np.dot(N, L), 0) + f_att * ScreenConstants.Ip *
                         self.__current_material[1][2] * max(np.dot(R, V), 0) ** ScreenConstants.n)
 
